@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from 'react-router-dom';
 const firebase = require('firebase');
 
 export default function Login() {
@@ -14,7 +14,7 @@ export default function Login() {
 		.auth()
 		.signInWithEmailAndPassword(email, password)
 			.then(() => {
-				history.push('./dashboard');
+				history.push('/dashboard');
 				}, err => {
 					setLoginError('Server error');
 					console.log(err);
@@ -27,7 +27,6 @@ export default function Login() {
 	function handleTypingPassword(e) {
 		setPassword(e.target.value);
 	}
-
 	return (
 		<div>
 			<h3>Log in to the Chat</h3>
@@ -35,7 +34,7 @@ export default function Login() {
 				<label htmlFor='email'>Enter your e-mail</label>
 				<input
           autoFocus
-					autoComplete
+					autoComplete='email'
 					onChange={(e) => handleTypingEmail(e)}
 					value={email}
 					id='email'
@@ -45,7 +44,7 @@ export default function Login() {
 			<form>
 				<label htmlFor='password'>Enter your password</label>
 				<input
-					autoComplete
+				autoComplete='password'
 					onChange={(e) => handleTypingPassword(e)}
 					value={password}
 					id='password'
@@ -53,6 +52,12 @@ export default function Login() {
 				/>
 			</form>
 			<button onClick={handleSubmit}>Submit</button>
+			<div>
+			Don't Have An Account?
+				<Link rel='stylesheet' to='/signup'>
+					Sign up
+				</Link>
+			</div>
 		</div>
 	);
 }

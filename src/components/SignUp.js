@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from 'react-router-dom';
 const firebase = require('firebase');
 
 export default function SignUp() {
-	const [nickName, setNickName] = useState('');
+	const [userName, setUserName] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [passwordConfirm, setPasswordConfirm] = useState('');
 	const [signUpError, setSignUpError] = useState('');
 	let history = useHistory();
-
 
 	function handleSubmit(e) {
 		e.preventDefault();
@@ -21,29 +20,36 @@ export default function SignUp() {
 		firebase
 			.auth()
 			.createUserWithEmailAndPassword(email, password)
-			.then((authRes) => {
-				const userObj = {
-					email: authRes.user.email,
-				};
-				firebase
-					.firestore()
-					.collection('users')
-					.doc(email)
-					.set(userObj)
-					.then(() => {
-						history.push('./dashboard');
-					}, dbError => {
-            console.log(dbError);
-            setSignUpError('Failed to add user');
-          });
-			}, authErr => {
-        console.log(authErr);
-        setSignUpError('Failed to add user')
-      });
+			.then(
+				(authRes) => {
+					const userObj = {
+						email: authRes.user.email,
+						userName: userName,
+					};
+					firebase
+						.firestore()
+						.collection('users')
+						.doc(email)
+						.set(userObj)
+						.then(
+							() => {
+								history.push('./dashboard');
+							},
+							(dbError) => {
+								console.log(dbError);
+								setSignUpError('Failed to add user');
+							}
+						);
+				},
+				(authErr) => {
+					console.log(authErr);
+					setSignUpError('Failed to add user');
+				}
+			);
 	}
 
-	function handleTypingNick(e) {
-		setNickName(e.target.value);
+	function handleTypingName(e) {
+		setUserName(e.target.value);
 	}
 	function handleTypingEmail(e) {
 		setEmail(e.target.value);
@@ -59,20 +65,20 @@ export default function SignUp() {
 		<div>
 			<h3>Sign Up!</h3>
 			<form>
-				<label htmlFor='nickName'>Enter your nick name</label>
+				<label htmlFor='userName'>Enter your user name</label>
 				<input
 					autoFocus
-					autoComplete
-					onChange={(e) => handleTypingNick(e)}
-					value={nickName}
-					id='nickName'
+					autoComplete='userName'
+					onChange={(e) => handleTypingName(e)}
+					value={userName}
+					id='userName'
 					type='text'
 				/>
 			</form>
 			<form>
 				<label htmlFor='email'>Enter your e-mail</label>
 				<input
-					autoComplete
+					autoComplete='email'
 					onChange={(e) => handleTypingEmail(e)}
 					value={email}
 					id='email'
@@ -82,7 +88,7 @@ export default function SignUp() {
 			<form>
 				<label htmlFor='password'>Create your password</label>
 				<input
-					autoComplete
+					autoComplete='password'
 					onChange={(e) => handleTypingPassword(e)}
 					value={password}
 					id='password'
@@ -92,7 +98,7 @@ export default function SignUp() {
 			<form>
 				<label htmlFor='passwordConfirm'>Confirm your password</label>
 				<input
-					autoComplete
+					autoComplete='password-confirm'
 					onChange={(e) => handleTypingPasswordConfirm(e)}
 					value={passwordConfirm}
 					id='passwordConfirm'
@@ -100,6 +106,12 @@ export default function SignUp() {
 				/>
 			</form>
 			<button onClick={handleSubmit}>Submit</button>
+			<div>
+				Have an account already?
+				<Link rel='stylesheet' to='/login'>
+					Log in
+				</Link>
+			</div>
 		</div>
 	);
 }

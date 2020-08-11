@@ -16,7 +16,7 @@ let history = useHistory();
 useEffect(() => {
   firebase.auth().onAuthStateChanged(async user => {
     if(!user) {
-      history.pushState('./login')
+      history.push('/login')
     } else {
       await firebase
       .firestore()
@@ -33,23 +33,29 @@ useEffect(() => {
   })
 }, [history, userEmail, userName])
 
-const selectChat = (chatIndex) => {
+const handleSelectChat = (chatIndex) => {
   console.log("Selected chat", chatIndex);
 }
-const newChatBtn = () => setNewChatVisible(true)
-
+const handleNewChat = () => {
+  setNewChatVisible(true)
+  setSelectedChat(null)
+}
+const handleSignOut = () => {
+  firebase.auth().signOut()
+}
   return (
     <div>
-      <p>{userName} Dashboard</p>
+      <h2>{userEmail} Dashboard</h2>
       <ChatList
         history={history}
-        newChatBtn={newChatBtn}
-        selectChat={selectChat}
+        newChatBtn={handleNewChat}
+        selectChat={handleSelectChat}
         chats={chats}
         userEmail={userEmail}
         userName={userName}
         selectedChat={selectedChat}
       />
+    <button onClick={handleSignOut}>Sign out</button>
     </div>
   )
 };
