@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import ChatList from './ChatList'
 import { useHistory } from "react-router-dom";
 const firebase = require('firebase');
@@ -13,6 +13,25 @@ const [userName, setUserName] = useState(null)
 const [newChatVisible, setNewChatVisible] = useState(false)
 let history = useHistory();
 
+useEffect(() => {
+  firebase.auth().onAuthStateChanged(async user => {
+    if(!user) {
+      history.pushState('./login')
+    } else {
+      await firebase
+      .firestore()
+      .collection('chats')
+      .where('users', 'array-contains', user.email)
+      .onSnapshot(
+        async res => {
+        const chats = res.docs.map(doc => doc.data());
+        await setUserEmail(user.email)
+        await setChats(chats)
+        await setUserName(user.userName)
+      })
+    }
+  })
+}, [history, userEmail, userName])
 
 const selectChat = (chatIndex) => {
   console.log("Selected chat", chatIndex);
