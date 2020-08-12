@@ -2,10 +2,9 @@ import React from 'react';
 
 export default function ChatList(props) {
 	const newChat = () => {
-		console.log('new chat clicked');
 	};
   const selectChat = (index) => {
-    console.log('selected chat index is', index);
+    props.selectChat(index)
   }
 	return (
 		<div>

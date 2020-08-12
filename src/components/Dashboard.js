@@ -1,16 +1,18 @@
 import React, {useState, useEffect} from 'react'
-import ChatList from './ChatList'
 import { useHistory } from "react-router-dom";
+import ChatList from './ChatList'
+import ChatView from './ChatView'
+import InputText from './InputText'
 const firebase = require('firebase');
 
 
 export default function Dashboard() {
-
 const [selectedChat, setSelectedChat] = useState(null)
 const [chats, setChats] = useState([])
 const [userEmail, setUserEmail] = useState(null)
 const [userName, setUserName] = useState(null)
 const [newChatVisible, setNewChatVisible] = useState(false)
+const [currentSecondUserEmail, setCurrentSecondUserEmail] = useState(null)
 let history = useHistory();
 
 useEffect(() => {
@@ -33,8 +35,14 @@ useEffect(() => {
   })
 }, [history, userEmail, userName])
 
+const findCurrentSecondUser = (chatIndex) => {
+ const anotherUser = chats[chatIndex].users.filter(user => user !== userEmail).toString()
+ return anotherUser;
+}
+
 const handleSelectChat = (chatIndex) => {
-  console.log("Selected chat", chatIndex);
+  setSelectedChat(chatIndex)
+  setCurrentSecondUserEmail(findCurrentSecondUser(chatIndex))
 }
 const handleNewChat = () => {
   setNewChatVisible(true)
@@ -42,6 +50,22 @@ const handleNewChat = () => {
 }
 const handleSignOut = () => {
   firebase.auth().signOut()
+}
+
+const createDocKey = () => {return [userEmail, currentSecondUserEmail].sort().join(':')}
+const handleSendMsg = (msgToSend) => {
+  const docKey = createDocKey()
+  firebase
+    .firestore()
+    .collection('chats')
+    .doc(docKey)
+    .update({
+      messages: firebase.firestore.FieldValue.arrayUnion({
+        sender: userEmail,
+        message: msgToSend,
+        timestamp: Date.now()
+      })
+    })
 }
   return (
     <div>
@@ -56,6 +80,14 @@ const handleSignOut = () => {
         selectedChat={selectedChat}
       />
     <button onClick={handleSignOut}>Sign out</button>
+    <ChatView 
+      user={userEmail}
+      chat={chats[selectedChat]}
+      selectedChat={selectedChat}
+    />
+    <InputText 
+      onHandleSendMsg={handleSendMsg}
+    />
     </div>
   )
 };
