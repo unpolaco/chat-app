@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react'
 import { useHistory } from "react-router-dom";
 import ChatList from './ChatList'
 import ChatView from './ChatView'
+import InputText from './InputText'
 const firebase = require('firebase');
 
 
@@ -61,6 +62,7 @@ const handleSignOut = () => {
       chat={chats[selectedChat]}
       selectedChat={selectedChat}
     />
+    <InputText />
     </div>
   )
 };
