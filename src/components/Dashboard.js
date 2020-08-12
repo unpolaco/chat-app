@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from 'react'
-import ChatList from './ChatList'
 import { useHistory } from "react-router-dom";
+import ChatList from './ChatList'
+import ChatView from './ChatView'
 const firebase = require('firebase');
 
 
 export default function Dashboard() {
-
 const [selectedChat, setSelectedChat] = useState(null)
 const [chats, setChats] = useState([])
 const [userEmail, setUserEmail] = useState(null)
@@ -34,7 +34,7 @@ useEffect(() => {
 }, [history, userEmail, userName])
 
 const handleSelectChat = (chatIndex) => {
-  console.log("Selected chat", chatIndex);
+  setSelectedChat(chatIndex)
 }
 const handleNewChat = () => {
   setNewChatVisible(true)
@@ -56,6 +56,11 @@ const handleSignOut = () => {
         selectedChat={selectedChat}
       />
     <button onClick={handleSignOut}>Sign out</button>
+    <ChatView 
+      user={userEmail}
+      chat={chats[selectedChat]}
+      selectedChat={selectedChat}
+    />
     </div>
   )
 };
