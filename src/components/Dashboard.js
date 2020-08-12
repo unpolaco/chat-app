@@ -12,6 +12,7 @@ const [chats, setChats] = useState([])
 const [userEmail, setUserEmail] = useState(null)
 const [userName, setUserName] = useState(null)
 const [newChatVisible, setNewChatVisible] = useState(false)
+const [currentSecondUserEmail, setCurrentSecondUserEmail] = useState(null)
 let history = useHistory();
 
 useEffect(() => {
@@ -34,8 +35,14 @@ useEffect(() => {
   })
 }, [history, userEmail, userName])
 
+const findCurrentSecondUser = (chatIndex) => {
+ const anotherUser = chats[chatIndex].users.filter(user => user !== userEmail).toString()
+ return anotherUser;
+}
+
 const handleSelectChat = (chatIndex) => {
   setSelectedChat(chatIndex)
+  setCurrentSecondUserEmail(findCurrentSecondUser(chatIndex))
 }
 const handleNewChat = () => {
   setNewChatVisible(true)
@@ -43,6 +50,9 @@ const handleNewChat = () => {
 }
 const handleSignOut = () => {
   firebase.auth().signOut()
+}
+const handleSendMsg = (msgToSend) => {
+  console.log("dashboard msg", msgToSend);
 }
   return (
     <div>
@@ -62,7 +72,9 @@ const handleSignOut = () => {
       chat={chats[selectedChat]}
       selectedChat={selectedChat}
     />
-    <InputText />
+    <InputText 
+      onHandleSendMsg={handleSendMsg}
+    />
     </div>
   )
 };
