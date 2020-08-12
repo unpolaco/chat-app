@@ -51,8 +51,21 @@ const handleNewChat = () => {
 const handleSignOut = () => {
   firebase.auth().signOut()
 }
+
+const createDocKey = () => {return [userEmail, currentSecondUserEmail].sort().join(':')}
 const handleSendMsg = (msgToSend) => {
-  console.log("dashboard msg", msgToSend);
+  const docKey = createDocKey()
+  firebase
+    .firestore()
+    .collection('chats')
+    .doc(docKey)
+    .update({
+      messages: firebase.firestore.FieldValue.arrayUnion({
+        sender: userEmail,
+        message: msgToSend,
+        timestamp: Date.now()
+      })
+    })
 }
   return (
     <div>
