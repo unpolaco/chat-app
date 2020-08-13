@@ -5,11 +5,9 @@ export default function ChatView({ chat }) {
 		<>
 			<p>Chatview</p>
 			<div>
-				{chat === undefined
-					? null
-					: chat.messages.map((msg) => {
-							return msg.message;
-					  })}
+				{chat.messages.map((msg) => {
+					return <p>{msg.message}</p>;
+				})}
 			</div>
 		</>
 	);

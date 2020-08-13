@@ -2,6 +2,7 @@ import React from 'react';
 
 export default function ChatList(props) {
 	const newChat = () => {
+    props.newChat();
 	};
   const selectChat = (index) => {
     props.selectChat(index)
