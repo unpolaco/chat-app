@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import ChatList from './ChatList'
 import ChatView from './ChatView'
 import InputText from './InputText'
+import NewChatWindow from './NewChatWindow';
 const firebase = require('firebase');
 
 
@@ -72,7 +73,7 @@ const handleSendMsg = (msgToSend) => {
       <h2>{userEmail} Dashboard</h2>
       <ChatList
         history={history}
-        newChatBtn={handleNewChat}
+        newChat={handleNewChat}
         selectChat={handleSelectChat}
         chats={chats}
         userEmail={userEmail}
@@ -88,6 +89,8 @@ const handleSendMsg = (msgToSend) => {
     <InputText 
       onHandleSendMsg={handleSendMsg}
     />
+    { newChatVisible ? 
+      <NewChatWindow /> : null }
     </div>
   )
 };
