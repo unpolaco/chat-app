@@ -64,48 +64,50 @@ export default function SignUp() {
 	return (
 		<div>
 			<h3>Sign Up!</h3>
-			<form>
-				<label htmlFor='userName'>Enter your user name</label>
-				<input
-					autoFocus
-					autoComplete='userName'
-					onChange={(e) => handleTypingName(e)}
-					value={userName}
-					id='userName'
-					type='text'
-				/>
+			<form onSubmit={handleSubmit}>
+				<form>
+					<label htmlFor='userName'>Enter your user name</label>
+					<input
+						autoFocus
+						autoComplete='userName'
+						onChange={(e) => handleTypingName(e)}
+						value={userName}
+						id='userName'
+						type='text'
+					/>
+				</form>
+				<form>
+					<label htmlFor='email'>Enter your e-mail</label>
+					<input
+						autoComplete='email'
+						onChange={(e) => handleTypingEmail(e)}
+						value={email}
+						id='email'
+						type='text'
+					/>
+				</form>
+				<form>
+					<label htmlFor='password'>Create your password</label>
+					<input
+						autoComplete='password'
+						onChange={(e) => handleTypingPassword(e)}
+						value={password}
+						id='password'
+						type='password'
+					/>
+				</form>
+				<form>
+					<label htmlFor='passwordConfirm'>Confirm your password</label>
+					<input
+						autoComplete='password-confirm'
+						onChange={(e) => handleTypingPasswordConfirm(e)}
+						value={passwordConfirm}
+						id='passwordConfirm'
+						type='password'
+					/>
+				</form>
+				<button onClick={handleSubmit}>Submit</button>
 			</form>
-			<form>
-				<label htmlFor='email'>Enter your e-mail</label>
-				<input
-					autoComplete='email'
-					onChange={(e) => handleTypingEmail(e)}
-					value={email}
-					id='email'
-					type='text'
-				/>
-			</form>
-			<form>
-				<label htmlFor='password'>Create your password</label>
-				<input
-					autoComplete='password'
-					onChange={(e) => handleTypingPassword(e)}
-					value={password}
-					id='password'
-					type='password'
-				/>
-			</form>
-			<form>
-				<label htmlFor='passwordConfirm'>Confirm your password</label>
-				<input
-					autoComplete='password-confirm'
-					onChange={(e) => handleTypingPasswordConfirm(e)}
-					value={passwordConfirm}
-					id='passwordConfirm'
-					type='password'
-				/>
-			</form>
-			<button onClick={handleSubmit}>Submit</button>
 			<div>
 				Have an account already?
 				<Link rel='stylesheet' to='/login'>
