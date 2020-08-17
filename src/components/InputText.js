@@ -1,26 +1,27 @@
 import React, {useState} from 'react'
 
-export default function InputText() {
+export default function InputText(props) {
 const [msgToSend, setMsgToSend] = useState('')
 
   const handleWritingMsg = (e) => {
     setMsgToSend(e.target.value)
   }
-  const handleSubmit = (e) => {
+  const onHandleSendMsg = (e) => {
     e.preventDefault();
-    console.log("message", msgToSend, "was sent");
+    props.onHandleSendMsg(msgToSend)
     setMsgToSend('')
   }
+
   return (
     <div>
-    <form onSubmit = {e => handleSubmit(e)}>
+    <form onSubmit={e => onHandleSendMsg(e)}>
       <input 
         type="text" 
         onChange={e => handleWritingMsg(e)}
         placeholder='Write your message'
         value={msgToSend}
       />
-      <button onClick={(e) => handleSubmit(e)}>Sent</button>
+      <button onClick={e => onHandleSendMsg(e)}>Send</button>
     </form>
     </div>
   )

@@ -30,6 +30,7 @@ export default function Login() {
 	return (
 		<div>
 			<h3>Log in to the Chat</h3>
+			<form onSubmit={handleSubmit}>
 			<form>
 				<label htmlFor='email'>Enter your e-mail</label>
 				<input
@@ -52,6 +53,7 @@ export default function Login() {
 				/>
 			</form>
 			<button onClick={handleSubmit}>Submit</button>
+			</form>
 			<div>
 			Don't Have An Account?
 				<Link rel='stylesheet' to='/signup'>
