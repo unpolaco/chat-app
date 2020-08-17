@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
+const firebase = require('firebase');
 
-export default function NewChatWindow() {
+export default function NewChatWindow(props) {
 
   const [newUser, setNewUser] = useState(null)
   const [newMessage, setNewMessage] = useState(null)
@@ -12,9 +13,53 @@ export default function NewChatWindow() {
     setNewUser(e.target.value)
   }
 
+  async function chatExists() {
+    const docKey = buildDocKey();
+    const chat = await 
+      firebase
+      .firestore()
+      .collection('chats')
+      .doc(docKey)
+      .get();
+    console.log(chat.exists);
+    return chat.exists;
+  }
+  
+  const userExists = async () => {
+    const usersSnapshot = await 
+    firebase
+      .firestore()
+      .collection('users')
+      .get();
+    const exists = usersSnapshot
+      .docs
+        .map(doc => doc.data().email)
+        .includes(newUser);
+    return exists;
+  }
+
+  const submitNewChat = async (e) => {
+    e.preventDefault();
+      const isUser = await userExists();
+    if(isUser) {
+      const isChat = await chatExists();
+      isChat ? goToChat() : createChat();
+    }
+  }
+
+  const createChat = () => {
+    props.newChatSubmit({
+      sendTo: newUser,
+      message: newMessage
+    });
+  }
+  const buildDocKey = () => [firebase.auth().currentUser.email, newUser].sort().join(':');
+  const goToChat = () => props.goToChat(buildDocKey(), newMessage);
+  
+
 	return (
 		<div>
-			<form>
+			<form onSubmit={(e) => submitNewChat(e)}>
 				<fieldSet>
         <div>
 					<label htmlFor='findUser'>Insert user email</label>
@@ -43,3 +88,5 @@ export default function NewChatWindow() {
 		</div>
 	);
 }
+
+

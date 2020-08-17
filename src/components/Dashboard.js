@@ -41,10 +41,10 @@ export default function Dashboard() {
 		return anotherUser;
 	};
 
-	const handleSelectChat = (chatIndex) => {
-		setSelectedChat(chatIndex);
-		setCurrentSecondUserEmail(findCurrentSecondUser(chatIndex));
-		setNewChatVisible(false);
+	const handleSelectChat = async (chatIndex) => {
+		await setSelectedChat(chatIndex);
+		await setCurrentSecondUserEmail(findCurrentSecondUser(chatIndex));
+		await setNewChatVisible(false);
 	};
 	const handleNewChat = () => {
 		setNewChatVisible(true);
@@ -71,6 +71,34 @@ export default function Dashboard() {
 				}),
 			});
 	};
+
+  const handleNewChatSubmit = async (chatObj) => {
+    const docKey = createDocKey(chatObj.sendTo);
+    await 
+      firebase
+        .firestore()
+        .collection('chats')
+        .doc(docKey)
+        .set({
+          messages: [{
+            message: chatObj.message,
+            sender: userEmail
+          }],
+          users: [userEmail, chatObj.sendTo],
+          receiverHasRead: false
+        })
+				setNewChatVisible(false);
+				handleSelectChat(chats.length - 1);
+  }
+
+	const goToChat = async (docKey, msg) => {
+    const usersInChat = docKey.split(':');
+    const chat = chats.find(chat => usersInChat.every(user => chat.users.includes(user)));
+    setNewChatVisible(false);
+    await handleSelectChat(chats.indexOf(chat));
+    handleNewChatSubmit(msg);
+  }
+
 	return (
 		<div>
 			<h2>{userEmail} Dashboard</h2>
@@ -84,7 +112,7 @@ export default function Dashboard() {
 				selectedChat={selectedChat}
 			/>
 			<button onClick={handleSignOut}>Sign out</button>
-			{selectedChat !== null ? (
+			{ selectedChat !== null ? (
 				<>
 					<ChatView
 						user={userEmail}
@@ -94,7 +122,10 @@ export default function Dashboard() {
 					<InputText onHandleSendMsg={handleSendMsg} />
 				</>
 			) : null}
-			{newChatVisible ? <NewChatWindow /> : null}
+			{ newChatVisible ? 
+        <NewChatWindow newChatSubmit={handleNewChatSubmit} goToChat={goToChat}/> : 
+        null
+      }
 		</div>
 	);
 }
