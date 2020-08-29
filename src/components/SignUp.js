@@ -1,8 +1,19 @@
 import React, { useState } from 'react';
 import { useHistory, Link } from 'react-router-dom';
+import {
+	Paper,
+	Button,
+	FormControl,
+	Input,
+	InputLabel,
+	Typography,
+	withStyles,
+} from '@material-ui/core';
+import styles from './Login_styles';
+
 const firebase = require('firebase');
 
-export default function SignUp() {
+function SignUp({ classes }) {
 	const [userName, setUserName] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
@@ -62,58 +73,75 @@ export default function SignUp() {
 	}
 
 	return (
-		<div>
-			<h3>Sign Up!</h3>
-			<form onSubmit={handleSubmit}>
-				<form>
-					<label htmlFor='userName'>Enter your user name</label>
-					<input
-						autoFocus
-						autoComplete='userName'
-						onChange={(e) => handleTypingName(e)}
-						value={userName}
-						id='userName'
-						type='text'
-					/>
+		<main className={classes.main}>
+			<Paper className={classes.paper}>
+				<Typography component='h1' variant='h5'>
+					Sign Up!
+				</Typography>
+				<form className={classes.form} onSubmit={handleSubmit}>
+					<FormControl required fullWidth margin='normal'>
+						<InputLabel htmlFor='userName'>Enter your user name</InputLabel>
+						<Input
+							autoFocus
+							autoComplete='userName'
+							onChange={(e) => handleTypingName(e)}
+							value={userName}
+							id='userName'
+							type='text'
+						/>
+					</FormControl>
+					<FormControl required fullWidth margin='normal'>
+						<InputLabel htmlFor='email'>Enter your e-mail</InputLabel>
+						<Input
+							autoComplete='email'
+							onChange={(e) => handleTypingEmail(e)}
+							value={email}
+							id='email'
+							type='text'
+						/>
+					</FormControl>
+					<FormControl required fullWidth margin='normal'>
+						<InputLabel htmlFor='password'>Create your password</InputLabel>
+						<Input
+							autoComplete='password'
+							onChange={(e) => handleTypingPassword(e)}
+							value={password}
+							id='password'
+							type='password'
+						/>
+					</FormControl>
+					<FormControl required fullWidth margin='normal'>
+						<InputLabel htmlFor='passwordConfirm'>
+							Confirm your password
+						</InputLabel>
+						<Input
+							autoComplete='password-confirm'
+							onChange={(e) => handleTypingPasswordConfirm(e)}
+							value={passwordConfirm}
+							id='passwordConfirm'
+							type='password'
+						/>
+					</FormControl>
+					<Button 
+						fullWidth 
+						variant='contained' 
+						color='primary' 
+						className={classes.submitBtn} 
+						type='submit'
+						onClick={handleSubmit}
+					>
+						Submit
+					</Button>
 				</form>
-				<form>
-					<label htmlFor='email'>Enter your e-mail</label>
-					<input
-						autoComplete='email'
-						onChange={(e) => handleTypingEmail(e)}
-						value={email}
-						id='email'
-						type='text'
-					/>
-				</form>
-				<form>
-					<label htmlFor='password'>Create your password</label>
-					<input
-						autoComplete='password'
-						onChange={(e) => handleTypingPassword(e)}
-						value={password}
-						id='password'
-						type='password'
-					/>
-				</form>
-				<form>
-					<label htmlFor='passwordConfirm'>Confirm your password</label>
-					<input
-						autoComplete='password-confirm'
-						onChange={(e) => handleTypingPasswordConfirm(e)}
-						value={passwordConfirm}
-						id='passwordConfirm'
-						type='password'
-					/>
-				</form>
-				<button onClick={handleSubmit}>Submit</button>
-			</form>
-			<div>
-				Have an account already?
-				<Link rel='stylesheet' to='/login'>
+				<Typography component='h4'>Have an account already?</Typography>
+				<Link 
+					className={classes.link} 
+					rel='stylesheet' 
+					to='/login'>
 					Log in
 				</Link>
-			</div>
-		</div>
+			</Paper>
+		</main>
 	);
 }
+export default withStyles(styles)(SignUp);
