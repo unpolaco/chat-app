@@ -4,9 +4,13 @@ import ChatList from './ChatList';
 import ChatView from './ChatView';
 import InputText from './InputText';
 import NewChatWindow from './NewChatWindow';
+import { AppBar, Typography, Button, withStyles } from '@material-ui/core';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import styles from './Dashboard_styles';
+
 const firebase = require('firebase');
 
-export default function Dashboard() {
+function Dashboard(props) {
 	const [selectedChat, setSelectedChat] = useState(null);
 	const [chats, setChats] = useState([]);
 	const [userEmail, setUserEmail] = useState(null);
@@ -14,6 +18,7 @@ export default function Dashboard() {
 	const [newChatVisible, setNewChatVisible] = useState(false);
 	const [currentSecondUserEmail, setCurrentSecondUserEmail] = useState(null);
 	let history = useHistory();
+	const { classes } = props;
 
 	useEffect(() => {
 		firebase.auth().onAuthStateChanged(async (user) => {
@@ -65,67 +70,81 @@ export default function Dashboard() {
 			.doc(docKey)
 			.update({
 				messages: firebase.firestore.FieldValue.arrayUnion({
-					sender: userEmail,
+					sendBy: userEmail,
 					message: msgToSend,
 					timestamp: Date.now(),
 				}),
 			});
 	};
 
-  const handleNewChatSubmit = async (chatObj) => {
-    const docKey = createDocKey(chatObj.sendTo);
-    await 
-      firebase
-        .firestore()
-        .collection('chats')
-        .doc(docKey)
-        .set({
-          messages: [{
-            message: chatObj.message,
-            sender: userEmail
-          }],
-          users: [userEmail, chatObj.sendTo],
-          receiverHasRead: false
-        })
-				setNewChatVisible(false);
-				handleSelectChat(chats.length - 1);
-  }
+	const handleNewChatSubmit = async (chatObj) => {
+		const docKey = createDocKey(chatObj.sendTo);
+		await firebase
+			.firestore()
+			.collection('chats')
+			.doc(docKey)
+			.set({
+				messages: [
+					{
+						message: chatObj.message,
+						sendBy: userEmail,
+					},
+				],
+				users: [userEmail, chatObj.sendTo],
+				receiverHasRead: false,
+			});
+		setNewChatVisible(false);
+		handleSelectChat(chats.length - 1);
+	};
 
 	const goToChat = async (docKey, msg) => {
-    const usersInChat = docKey.split(':');
-    const chat = chats.find(chat => usersInChat.every(user => chat.users.includes(user)));
-    setNewChatVisible(false);
-    await handleSelectChat(chats.indexOf(chat));
-    handleNewChatSubmit(msg);
-  }
+		const usersInChat = docKey.split(':');
+		const chat = chats.find((chat) =>
+			usersInChat.every((user) => chat.users.includes(user))
+		);
+		setNewChatVisible(false);
+		await handleSelectChat(chats.indexOf(chat));
+		handleNewChatSubmit(msg);
+	};
 
 	return (
-		<div>
-			<h2>{userEmail} Dashboard</h2>
-			<ChatList
-				history={history}
-				newChat={handleNewChat}
-				selectChat={handleSelectChat}
-				chats={chats}
-				userEmail={userEmail}
-				userName={userName}
-				selectedChat={selectedChat}
-			/>
-			<button onClick={handleSignOut}>Sign out</button>
-			{ selectedChat !== null ? (
-				<>
-					<ChatView
-						user={userEmail}
-						chat={chats[selectedChat]}
-						selectedChat={selectedChat}
+		<>
+			<AppBar className={classes.menu} position='static'>
+				<Typography>{userEmail} Dashboard</Typography>
+				<Button onClick={handleSignOut}>
+					Sign out
+					<ExitToAppIcon />
+				</Button>
+			</AppBar>
+			<div className={classes.flex}>
+				<ChatList
+					history={history}
+					newChat={handleNewChat}
+					selectChat={handleSelectChat}
+					chats={chats}
+					userEmail={userEmail}
+					userName={userName}
+					selectedChat={selectedChat}
+				/>
+				{selectedChat !== null 
+					? <div className={classes.stretch}>
+							<ChatView
+								user={userEmail}
+								chat={chats[selectedChat]}
+								selectedChat={selectedChat}
+							/>
+							<InputText onHandleSendMsg={handleSendMsg} />
+						</div>
+					: null}
+
+				{newChatVisible ? (
+					<NewChatWindow
+						newChatSubmit={handleNewChatSubmit}
+						goToChat={goToChat}
 					/>
-					<InputText onHandleSendMsg={handleSendMsg} />
-				</>
-			) : null}
-			{ newChatVisible ? 
-        <NewChatWindow newChatSubmit={handleNewChatSubmit} goToChat={goToChat}/> : 
-        null
-      }
-		</div>
+				) : null}
+			</div>
+		</>
 	);
 }
+export default withStyles(styles)(Dashboard);
